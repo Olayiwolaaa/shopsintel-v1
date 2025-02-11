@@ -61,14 +61,35 @@ async def view_rankings(
 
 @app.get("/creator_profile")
 async def creator_profile(
-    country: str = Query(..., description="Country code (US, UK, ES, MX)"),
+    country: str = Query(..., description="Country code (US, GB, ES, MX)"),
     creator_id: str = Query(..., description="Creator ID"),
-    profile_type: int = Query(..., description="Enter page numer (range 1 - 5)")
+    profile_type: int = Query(..., description="Enter page number (range 1 - 5)")
 ):
     url = "https://affiliate.tiktok.com/api/v1/oec/affiliate/creator/marketplace/profile"
     body = {"creator_oec_id": creator_id, "profile_types": [profile_type]}
     country_record = await get_country_data(country, db)
     params = {"user_language": country_record.user_language, "shop_region": country}
+    if not country_record:
+        raise HTTPException(status_code=400, detail="Invalid country code")
+    
+    headers = {
+        "User-Agent": ua.random,
+        "cookie": country_record.cookies
+    }
+
+    return await make_request(url, params, body, headers)
+
+@app.get("/shoppable_videos")
+async def shoppable_videos(
+    country: str = Query(..., description="Country code (US, GB, ES, MX)"),
+    scene_type: int = Query(2, description="2 for Top Sales, 3 for Most Views"),
+    page: int = Query(1, description="Page number starting from 1")
+):
+    cursor = (page - 1) * 15
+    url = "https://seller-uk.tiktok.com/api/v1/seller/livecenter/video_feed/list"
+    body = {"recommend": {"scene_type": scene_type}, "page": {"cursor": cursor, "count": 15}}
+    country_record = await get_country_data(country, db)
+    params = {"locale": country_record.user_language}
     if not country_record:
         raise HTTPException(status_code=400, detail="Invalid country code")
     
