@@ -38,6 +38,26 @@ async def find_creators(
     
     return await make_request(url, params, body, headers)
 
+@app.get("/view_rankings")
+async def view_rankings(
+    country: str = Query("US", description="Country code"), 
+    page: int = Query(1, description="Page number")
+):
+
+    url = "https://affiliate.tiktok.com/api/v1/oec/affiliate/cmp/creator/rank/list/get"
+    body = {"rank_list_meta":{"rank_type":1,"rank_period":1,"rank_date":"2025-02-09","indus_cate":"All","content_type":1},"size":20,"page": page}
+    country_record = await get_country_data(country, db)
+    params = {"user_language": country_record.user_language, "shop_region": country}
+    if not country_record:
+        raise HTTPException(status_code=400, detail="Invalid country code")
+    
+    headers = {
+        "User-Agent": ua.random,
+        "cookie": country_record.cookies
+    }
+    
+    return await make_request(url, params, body, headers)
+
 
 @app.get("/creator_profile")
 async def creator_profile(
