@@ -20,8 +20,8 @@ Ensure you have the following installed:
 ### Setup
 1. **Clone the repository:**
    ```sh
-   git clone https://github.com/yourusername/your-repo.git
-   cd your-repo
+   git clone https://github.com/Olayiwolaaa/shopsintel-v1.git
+   cd shopsintel-v1.git
    ```
 
 2. **Create and activate a virtual environment:**
@@ -92,17 +92,14 @@ curl -X GET "http://localhost:8000/creator_profile?country=US&creator_id=12345&p
 
 ## Project Structure
 ```
-/your-repo
+/shopsintel-v1.git
 │── src/
 │   ├── server.py            # FastAPI app entry point
-│   ├── api_client.py        # Handles external API requests
-│   ├── service.py           # Business logic functions
-│   ├── config/
-│   │   ├── connection.py    # Prisma DB connection
-│   │   ├── settings.py      # Environment configurations
+│   ├── request_handler.py   # Handles requests
 │── prisma/
 │   ├── schema.prisma        # Prisma ORM schema
 │── .env                     # Environment variables
+│── docker-compose.yaml      # Docker services
 │── requirements.txt         # Python dependencies
 │── README.md                # Documentation
 ```
