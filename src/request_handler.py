@@ -69,6 +69,18 @@ async def fetch_cookies(country: str, db):
             ActionChains(driver).move_to_element(go_to_seller_center_button).click().perform()
             print(f"Clicked 'Go to seller center' for {country}. Waiting for 15 seconds...")
             time.sleep(15)
+
+            if country == "US":
+                url = "https://affiliate.tiktokglobalshop.com/connection/creator?source_from=seller_affiliate_landing&shop_region=US"
+            elif country == "ID":
+                url = "https://affiliate-id.tokopedia.com/connection/creator?shop_region=ID"
+            else:
+                url = f"https://affiliate.tiktok.com/connection/creator?shop_region={country}"
+
+            driver.get(url)
+            print(f"Redirected to Affiliate Center for {country}. Waiting for 5 seconds...")
+            time.sleep(5)
+            
         except Exception as e:
             print(f"Error clicking button for {country}: {e}")
 
