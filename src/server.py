@@ -1,9 +1,9 @@
-from fastapi import FastAPI, HTTPException, Query
+from request_handler import fetch_cookies, get_country_data, make_request
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Query
 from contextlib import asynccontextmanager
 from fake_useragent import UserAgent
 from dotenv import load_dotenv
 from prisma import Prisma
-from request_handler import get_country_data, make_request
 
 
 @asynccontextmanager
@@ -58,7 +58,6 @@ async def view_rankings(
     
     return await make_request(url, params, body, headers)
 
-
 @app.get("/creator_profile")
 async def creator_profile(
     country: str = Query(..., description="Country code (US, GB, ES, MX)"),
@@ -100,5 +99,17 @@ async def shoppable_videos(
 
     return await make_request(url, params, body, headers)
 
+@app.post("/fetch-cookies/{country}")
+async def trigger_fetch_cookies(country: str, background_tasks: BackgroundTasks):
+    """
+    Trigger the Selenium cookie fetcher for a specific country.
+    Runs in the background.
+    """
+    country_data = await get_country_data(country, db)
+    if not country_data:
+        raise HTTPException(status_code=400, detail="Country not found.")
 
-
+    # Run Selenium in background
+    background_tasks.add_task(fetch_cookies, country, db)
+    
+    return {"message": f"Fetching cookies for {country} in the background"}
