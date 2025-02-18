@@ -1,0 +1,24 @@
+datasource db {
+  provider              = "postgresql"
+  url                   = env("DATABASE_URL")
+}
+
+generator client {
+  provider              = "prisma-client-py"
+  interface             = "sync"
+  recursive_type_depth  = 5
+}
+
+model User {
+  id                    String   @id @default(uuid())
+  email                 String   @unique
+  password              String
+  createdAt             DateTime @default(now())
+}
+
+model Country {
+  id                    String   @id @default(uuid())
+  name                  String   @unique
+  cookies               String
+  user_language         String?
+}
