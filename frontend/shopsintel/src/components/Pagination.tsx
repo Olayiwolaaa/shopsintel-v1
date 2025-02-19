@@ -1,14 +1,17 @@
-import Link from "next/link";
+"use client";
+
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 
 type PaginationProps = {
   currentPage: number;
   totalPages: number;
+  onPageChange: (page: number) => void;
 };
 
 export default function Pagination({
   currentPage,
   totalPages,
+  onPageChange,
 }: PaginationProps) {
   const maxVisiblePages = 5;
 
@@ -17,73 +20,64 @@ export default function Pagination({
       return Array.from({ length: totalPages }, (_, i) => i + 1);
     }
 
-    if (currentPage <= 3) {
-      return [1, 2, 3, 4, "ellipsis", totalPages];
-    }
+    const pages = [];
+    const leftBound = Math.max(2, currentPage - 2);
+    const rightBound = Math.min(totalPages - 1, currentPage + 2);
 
-    if (currentPage >= totalPages - 2) {
-      return [
-        1,
-        "ellipsis",
-        totalPages - 3,
-        totalPages - 2,
-        totalPages - 1,
-        totalPages,
-      ];
+    pages.push(1);
+    if (leftBound > 2) pages.push("ellipsis");
+    for (let i = leftBound; i <= rightBound; i++) {
+      pages.push(i);
     }
+    if (rightBound < totalPages - 1) pages.push("ellipsis");
+    pages.push(totalPages);
 
-    return [
-      1,
-      "ellipsis",
-      currentPage - 1,
-      currentPage,
-      currentPage + 1,
-      "ellipsis",
-      totalPages,
-    ];
+    return pages;
   };
 
   const pageNumbers = getPageNumbers();
 
   return (
-    <nav className="flex justify-center items-center space-x-2 mt-8">
-      <Link
-        href={`?page=${currentPage - 1}`}
+    <nav className="flex justify-center items-center space-x-2 mt-8 mb-8">
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
         className={`p-2 rounded-full transition-colors duration-200 ${
-          currentPage === 1
-            ? "text-gray-500 cursor-not-allowed"
-            : "text-gray-400 hover:text-white hover:bg-gray-700"
+          currentPage === 1 ? "text-gray-500 cursor-not-allowed" : "text-gray-400 hover:text-white hover:bg-gray-700"
         }`}
-        aria-disabled={currentPage === 1}
       >
         <ChevronLeft size={24} />
-      </Link>
-      {pageNumbers.map((page, index) => (
-        <Link
-          key={index}
-          href={typeof page === "number" ? `?page=${page}` : "#"}
-          className={`px-4 py-2 rounded-md transition-colors duration-200 ${
-            currentPage === page
-              ? "bg-primary text-primary-foreground"
-              : page === "ellipsis"
-              ? "text-gray-500 cursor-default"
-              : "text-gray-400 hover:text-white hover:bg-gray-700"
-          }`}
-        >
-          {page === "ellipsis" ? <MoreHorizontal size={24} /> : page}
-        </Link>
-      ))}
-      <Link
-        href={`?page=${currentPage + 1}`}
+      </button>
+
+      {pageNumbers.map((page, index) =>
+        typeof page === "number" ? (
+          <button
+            key={index}
+            onClick={() => onPageChange(page)}
+            className={`px-4 py-2 rounded-md transition-colors duration-200 ${
+              currentPage === page
+                ? "bg-primary text-primary-foreground"
+                : "text-gray-400 hover:text-white hover:bg-gray-700"
+            }`}
+          >
+            {page}
+          </button>
+        ) : (
+          <span key={index} className="px-4 py-2 text-gray-500 cursor-default">
+            <MoreHorizontal size={24} />
+          </span>
+        )
+      )}
+
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
         className={`p-2 rounded-full transition-colors duration-200 ${
-          currentPage === totalPages
-            ? "text-gray-500 cursor-not-allowed"
-            : "text-gray-400 hover:text-white hover:bg-gray-700"
+          currentPage === totalPages ? "text-gray-500 cursor-not-allowed" : "text-gray-400 hover:text-white hover:bg-gray-700"
         }`}
-        aria-disabled={currentPage === totalPages}
       >
         <ChevronRight size={24} />
-      </Link>
+      </button>
     </nav>
   );
 }
