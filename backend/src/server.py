@@ -1,5 +1,6 @@
 from request_handler import fetch_cookies, get_country_data, make_request
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from fake_useragent import UserAgent
 from dotenv import load_dotenv
@@ -18,6 +19,14 @@ ua = UserAgent()
 load_dotenv()
 db = Prisma()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.get("/find_creators")
 async def find_creators(
     country: str = Query("US", description="Country code"), 
@@ -29,6 +38,7 @@ async def find_creators(
         url = "https://affiliate-id.tokopedia.com/api/v1/oec/affiliate/creator/marketplace/find"
     else:
         url = "https://affiliate.tiktok.com/api/v1/oec/affiliate/creator/marketplace/find"
+        
     body = {"query": "", "pagination": {"size": 12, "page": page}, "filter_params": {}}
     country_record = await get_country_data(country, db)
     params = {"user_language": country_record.user_language, "shop_region": country}
@@ -47,8 +57,15 @@ async def view_rankings(
     country: str = Query("US", description="Country code"), 
     page: int = Query(1, description="Page number")
 ):
+    
+    if country == "US":
+        url = "https://affiliate.tiktokglobalshop.com/api/v1/oec/affiliate/cmp/creator/rank/list/get"
+    elif country == "ID":
+        url = "https://affiliate-id.tokopedia.com/api/v1/oec/affiliate/cmp/creator/rank/list/get"
+    else:
+        url = "https://affiliate.tiktok.com/api/v1/oec/affiliate/cmp/creator/rank/list/get"
 
-    url = "https://affiliate.tiktok.com/api/v1/oec/affiliate/cmp/creator/rank/list/get"
+    # url = "https://affiliate.tiktok.com/api/v1/oec/affiliate/cmp/creator/rank/list/get"
     body = {"rank_list_meta":{"rank_type":1,"rank_period":1,"rank_date":"2025-02-09","indus_cate":"All","content_type":1},"size":20,"page": page}
     country_record = await get_country_data(country, db)
     params = {"user_language": country_record.user_language, "shop_region": country}
@@ -68,7 +85,14 @@ async def creator_profile(
     creator_id: str = Query(..., description="Creator ID"),
     profile_type: int = Query(..., description="Enter page number (range 1 - 5)")
 ):
-    url = "https://affiliate.tiktok.com/api/v1/oec/affiliate/creator/marketplace/profile"
+    if country == "US":
+        url = "https://affiliate.tiktokglobalshop.com/api/v1/oec/affiliate/creator/marketplace/profile"
+    elif country == "ID":
+        url = "https://affiliate-id.tokopedia.com/api/v1/oec/affiliate/creator/marketplace/profile"
+    else:
+        url = "https://affiliate.tiktok.com/api/v1/oec/affiliate/creator/marketplace/profile"
+
+    # url = "https://affiliate.tiktok.com/api/v1/oec/affiliate/creator/marketplace/profile"
     body = {"creator_oec_id": creator_id, "profile_types": [profile_type]}
     country_record = await get_country_data(country, db)
     params = {"user_language": country_record.user_language, "shop_region": country}
@@ -89,10 +113,19 @@ async def shoppable_videos(
     page: int = Query(1, description="Page number starting from 1")
 ):
     cursor = (page - 1) * 15
-    url = "https://seller-uk.tiktok.com/api/v1/seller/video_center/benchmark_account/list" #1
-    body = {"filter_category_list":[],"page":{"cursor":cursor,"count":10}} #1
+    if country == "US":
+        # url = "https://seller.us.tiktokglobalshop.com/api/v1/seller/video_center/benchmark_account/list" #1
+        url = "https://seller.us.tiktokglobalshop.com/api/v1/seller/livecenter/video_feed/list" #2
+    elif country == "ID":
+        # url = "https://seller-id.tokopedia.com/api/v1/seller/video_center/benchmark_account/list" #1
+        url = "https://seller-id.tokopedia.com/api/v1/seller/livecenter/video_feed/list" #2
+    else:
+        # url = "https://seller-uk.tiktok.com/api/v1/seller/video_center/benchmark_account/list" #1
+        url = "https://seller-uk.tiktok.com/api/v1/seller/livecenter/video_feed/list" #2
+
+    # body = {"filter_category_list":[],"page":{"cursor":cursor,"count":10}} #1
     # url = "https://seller-uk.tiktok.com/api/v1/seller/livecenter/video_feed/list" #2
-    # body = {"recommend": {"scene_type": scene_type}, "page": {"cursor": cursor, "count": 15}} #2
+    body = {"recommend": {"scene_type": scene_type}, "page": {"cursor": cursor, "count": 15}} #2
     country_record = await get_country_data(country, db)
     params = {"locale": country_record.user_language}
     if not country_record:
