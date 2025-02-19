@@ -39,7 +39,7 @@ async def find_creators(
     else:
         url = "https://affiliate.tiktok.com/api/v1/oec/affiliate/creator/marketplace/find"
         
-    body = {"query": "", "pagination": {"size": 12, "page": page}, "filter_params": {}}
+    body = {"query": "", "pagination": {"size": 12, "page": page}, "filter_params": {}, "algorithm": 18}
     country_record = await get_country_data(country, db)
     params = {"user_language": country_record.user_language, "shop_region": country}
     if not country_record:
