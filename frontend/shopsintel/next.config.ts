@@ -59,10 +59,12 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "p16-oec-sg.ibyteimg.com",
       },
+      {
+        protocol: "https",
+        hostname: "p19-oec-useast8.tiktokcdn-us.com",
+      },
     ],
   },
 };
 
 export default nextConfig;
-
-
