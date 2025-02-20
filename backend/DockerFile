@@ -7,22 +7,16 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y curl
 
-# Install Node.js (needed for Prisma)
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs
-
 # Copy project files
 COPY . .
 
-# Install Python dependencies
+# Install Python dependencies (including Prisma)
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
-
-# Install Prisma CLI
-RUN npm install -g prisma
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir prisma
 
 # Generate Prisma client
 RUN prisma generate
 
 # Start FastAPI after migrating Prisma
-CMD ["sh", "-c", "prisma migrate deploy && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
+CMD ["sh", "-c", "prisma db push && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
