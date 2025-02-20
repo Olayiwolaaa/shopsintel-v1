@@ -30,7 +30,7 @@ export default function Home() {
           queryParams.append("search_query", searchQuery);
         }
 
-        const apiUrl = `http://127.0.0.1:8000/find_creators?${queryParams.toString()}`;
+        const apiUrl = `https://shopsintel-backend.onrender.com/find_creators?${queryParams.toString()}`;
         console.log(`Fetching: ${apiUrl}`);
 
         const response = await fetch(apiUrl);
