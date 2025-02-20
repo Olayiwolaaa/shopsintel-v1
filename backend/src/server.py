@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 from prisma import Prisma
 import os
 
-
 db = Prisma()
 load_dotenv()
 
