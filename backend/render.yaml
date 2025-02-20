@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: fastapi-app
+    runtime: docker
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://admin:KaRr9Y2sfot6I7tdUM3NmeE5pViPB4TD@dpg-cur7nkbqf0us739od3h0-a/shopsintel
+    autoDeploy: true

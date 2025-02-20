@@ -24,5 +24,5 @@ RUN npm install -g prisma
 # Generate Prisma client
 RUN prisma generate
 
-# Run Prisma migrations before starting the app
+# Start FastAPI after migrating Prisma
 CMD ["sh", "-c", "prisma migrate deploy && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
