@@ -6,7 +6,11 @@ from contextlib import asynccontextmanager
 from fake_useragent import UserAgent
 from dotenv import load_dotenv
 from prisma import Prisma
+import os
 
+
+db = Prisma()
+load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -17,8 +21,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 ua = UserAgent()
-load_dotenv()
-db = Prisma()
+PORT = int(os.getenv("PORT", 8000))  # Default to 8000 if PORT is not set
 
 app.add_middleware(
     CORSMiddleware,
@@ -186,3 +189,7 @@ async def trigger_fetch_cookies(country: str, background_tasks: BackgroundTasks)
     background_tasks.add_task(fetch_cookies, country, db)
     
     return {"message": f"Successfully fetched cookie for {country}"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=PORT)
