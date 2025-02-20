@@ -24,8 +24,7 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children, page }: RootLayoutProps) {
-
-  if (page >=3){
+  return (
     <ClerkProvider>
       <html lang="en" className="dark">
         <body
@@ -45,14 +44,5 @@ export default function RootLayout({ children, page }: RootLayoutProps) {
         </body>
       </html>
     </ClerkProvider>
-  }
-  else{
-    <html lang="en" className="dark">
-      <body
-        className={`${inter.className} bg-background text-foreground text-white`}
-      >
-        {children}
-      </body>
-    </html>;
-  }
+  );
 }
