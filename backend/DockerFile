@@ -2,7 +2,7 @@
 FROM python:3.13-slim
 
 # Set working directory
-WORKDIR /
+WORKDIR /src
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y curl
@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir prisma
 
 # Generate Prisma client
-RUN prisma generate --schema=prisma/schema.prisma
+RUN prisma generate --schema=../cd prisma/schema.prisma
 
 # Start FastAPI after migrating Prisma
-CMD ["sh", "-c", "prisma db push && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"]
+CMD ["sh", "-c", "prisma db push --schema=../prisma/schema.prisma && uvicorn app:app --host 0.0.0.0 --port 8000 --reload"]
