@@ -7,14 +7,15 @@ import CountrySelector from "@/components/CountrySelector";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import SortByDropdown from "@/components/SortByDropdown";
 import { InputWithButton } from "@/components/InputWithButton"; // Import search input
+import { VideoItem } from "@/types";
 
 export default function Home() {
-  const [videos, setVideos] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCountry, setSelectedCountry] = useState("GB");
-  const [sortBy, setSortBy] = useState("relevance");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [videos, setVideos] = useState<VideoItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedCountry, setSelectedCountry] = useState<string>("GB");
+  const [sortBy, setSortBy] = useState<string>("relevance");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
     async function fetchVideos() {
@@ -34,49 +35,57 @@ export default function Home() {
         console.log(`Fetching: ${apiUrl}`);
 
         const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
         const data = await response.json();
 
         if (data?.creator_profile_list?.length > 0) {
-          setVideos(
-            data.creator_profile_list
-              .map((creator: any, index: number) => {
-                const topVideoData = creator?.top_video_data?.value?.[0];
+          const parsedVideos: VideoItem[] = data.creator_profile_list
+            .map((creator: any, index: number): VideoItem | null => {
+              const topVideoData = creator?.top_video_data?.value?.[0];
 
-                if (!topVideoData || !topVideoData.video_products?.length)
-                  return null;
+              if (!topVideoData || !topVideoData.video_products?.length)
+                return null;
 
-                return {
-                  id: index + 1,
-                  followerCount: creator?.follower_cnt?.value || 0,
-                  pageUrl: `https://tiktok.com/@${
-                    creator?.handle?.value || "unknown"
-                  }`,
-                  videoGMV: creator?.video_gmv?.value?.value || 0,
-                  videoId: topVideoData?.item_id || "unknown",
-                  mainImage:
-                    topVideoData?.video?.post_url || "/default-image.jpg",
-                  videoDescription:
-                    topVideoData?.name || "No description available",
-                  productImage:
-                    topVideoData?.video_products?.[0]?.image ||
-                    "/default-image.jpg",
-                  productDescription:
-                    topVideoData?.video_products?.[0]?.name ||
-                    "No description available",
-                  creatorUsername: creator?.handle?.value || "Unknown",
-                  views: topVideoData?.play_cnt || 0,
-                  likes: topVideoData?.like_cnt || 0,
-                  comments: topVideoData?.comment_cnt || 0,
-                };
-              })
-              .filter(Boolean)
-          );
+              return {
+                id: index + 1,
+                followerCount: creator?.follower_cnt?.value || 0,
+                pageUrl: `https://tiktok.com/@${
+                  creator?.handle?.value || "unknown"
+                }`,
+                videoGMV: creator?.video_gmv?.value?.value || 0,
+                videoId: topVideoData?.item_id || 0, // Ensure string type
+                mainImage:
+                  topVideoData?.video?.post_url || "/default-image.jpg",
+                videoDescription:
+                  topVideoData?.name || "No description available",
+                productImage:
+                  topVideoData?.video_products?.[0]?.image ||
+                  "/default-image.jpg",
+                productDescription:
+                  topVideoData?.video_products?.[0]?.name ||
+                  "No description available",
+                creatorUsername: creator?.handle?.value || "Unknown",
+                views: topVideoData?.play_cnt || 0,
+                likes: topVideoData?.like_cnt || 0,
+                comments: topVideoData?.comment_cnt || 0,
+              };
+            })
+            .filter(
+              (video: VideoItem | null): video is VideoItem => video !== null
+            );
+
+          setVideos(parsedVideos);
         } else {
           console.warn("No creators found.");
           setVideos([]);
         }
       } catch (error) {
         console.error("Error fetching videos:", error);
+        setVideos([]); // Ensure state is always updated
       } finally {
         setLoading(false);
       }
@@ -85,7 +94,7 @@ export default function Home() {
     fetchVideos();
   }, [currentPage, selectedCountry, sortBy, searchQuery]);
 
-  // 🔹 Handle search submission
+  // Handle search submission
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setCurrentPage(1); // Reset to first page when searching
@@ -104,7 +113,7 @@ export default function Home() {
         />
         <SortByDropdown value={sortBy} onChange={setSortBy} />
 
-        {/* 🔹 Search Bar */}
+        {/* Search Bar */}
         <InputWithButton onSearch={handleSearch} />
       </div>
 

@@ -18,12 +18,11 @@ export const metadata: Metadata = {
     "Find trending products, live creators and your competitors shops",
 };
 
-interface RootLayoutProps {
+export default function RootLayout({
+  children,
+}: {
   children: React.ReactNode;
-  page: number; // Add page prop to determine which page we're on
-}
-
-export default function RootLayout({ children, page }: RootLayoutProps) {
+}) {
   return (
     <ClerkProvider>
       <html lang="en" className="dark">
@@ -41,6 +40,9 @@ export default function RootLayout({ children, page }: RootLayoutProps) {
             </SignedOut>
             <SignedIn>{children}</SignedIn>
           </main>
+          <footer className="border-t border-gray-800 py-4 text-center text-sm text-muted-foreground">
+            © 2025 ViralCntrl. All rights reserved.
+          </footer>
         </body>
       </html>
     </ClerkProvider>
