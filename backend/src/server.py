@@ -1,3 +1,4 @@
+from typing import Optional
 from request_handler import fetch_cookies, get_country_data, make_request
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,7 +31,9 @@ app.add_middleware(
 @app.get("/find_creators")
 async def find_creators(
     country: str = Query("US", description="Country code"), 
-    page: int = Query(1, description="Page number")
+    page: int = Query(1, description="Page number"),
+    filter_by: Optional[str] = Query("relevance", description="Filter creators by a specific metric"),
+    search_query: Optional[str] = Query(None, description="Search query for creators")  # 🔹 Added search
 ):
     if country == "US":
         url = "https://affiliate.tiktokglobalshop.com/api/v1/oec/affiliate/creator/marketplace/find"
@@ -38,19 +41,50 @@ async def find_creators(
         url = "https://affiliate-id.tokopedia.com/api/v1/oec/affiliate/creator/marketplace/find"
     else:
         url = "https://affiliate.tiktok.com/api/v1/oec/affiliate/creator/marketplace/find"
-        
-    body = {"query": "", "pagination": {"size": 12, "page": page}, "filter_params": {}, "algorithm": 18}
+
+    set_algorithm_to_filter_by = {
+        "relevance": 1,
+        "GMV": 18,
+        "Item Sold": 20,
+        "Followers": 26,
+        "Avg. video views": 24,
+        "Engagement Rate": None,  # Exclude "algorithm" if this is used
+    }
+
+    # Ensure valid filter selection
+    if filter_by not in set_algorithm_to_filter_by:
+        raise HTTPException(status_code=400, detail="Invalid filter option")
+
+    # Prepare request body
+    body = {
+        "pagination": {"size": 12, "page": page},
+        "filter_params": {},
+    }
+
+    # 🔹 Add "query" only if search_query is provided
+    if search_query:
+        body["query"] = search_query
+        body["query_type"] = 3  # Needed for searching
+
+    # Add algorithm parameter only if it's not None
+    algorithm = set_algorithm_to_filter_by[filter_by]
+    if algorithm is not None:
+        body["algorithm"] = algorithm
+
     country_record = await get_country_data(country, db)
-    params = {"user_language": country_record.user_language, "shop_region": country}
     if not country_record:
         raise HTTPException(status_code=400, detail="Invalid country code")
-    
+
+    params = {"user_language": country_record.user_language, "shop_region": country}
+
     headers = {
         "User-Agent": ua.random,
         "cookie": country_record.cookies
     }
-    
+
     return await make_request(url, params, body, headers)
+
+
 
 @app.get("/view_rankings")
 async def view_rankings(
