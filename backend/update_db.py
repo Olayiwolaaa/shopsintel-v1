@@ -42,12 +42,11 @@ def update_cookie_column(country_name, cookie_value):
 def fetch_cookies(country: str):
     """Fetch TikTok Shop cookies for a given country and update PostgreSQL."""
     COUNTRY_URLS = {
-        "US": "https://partner.us.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=US",
-        "GB": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=GB",
-        "ES": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=ES",
+    #     "US": "https://partner.us.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=US",
+    #     "GB": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=GB",
         "MX": "https://partner.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=MX",
+        "ES": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=ES",
     }
-    profile_dir = "Profile 1" if country in ["ES", "MX"] else "Default"
 
     if country not in COUNTRY_URLS:
         print(f"❌ Invalid country: {country}")
@@ -57,9 +56,13 @@ def fetch_cookies(country: str):
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--headless")  # Uncomment for headless mode
-    # Dynamically set user-data-dir and profile-directory
     chrome_options.add_argument("--user-data-dir=/Users/muizzkaraole/Library/Application Support/Google/Chrome_Selenium")
-    chrome_options.add_argument(f"--profile-directory={profile_dir}")
+    
+    # Handle US and GB separately from MX and ES
+    if country in ["US", "GB"]:
+        chrome_options.add_argument("--profile-directory=Default")
+    else:
+        chrome_options.add_argument("--profile-directory=Profile 1")
 
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
@@ -77,8 +80,8 @@ def fetch_cookies(country: str):
                 EC.presence_of_element_located((By.XPATH, '//*[@id="arco-tabs-0-panel-1"]//button/span'))
             )
             ActionChains(driver).move_to_element(go_to_seller_center_button).click().perform()
-            print(f"✅ Clicked 'Go to seller center' for {country}. Waiting for 15 seconds...")
-            time.sleep(15)
+            print(f"✅ Clicked 'Go to seller center' for {country}. Waiting for 20 seconds...")
+            time.sleep(20)
 
             # Redirect to affiliate center
             if country == "US":
@@ -106,10 +109,17 @@ def fetch_cookies(country: str):
         driver.quit()
         print("🚀 Selenium driver closed.")
 
-# Run the script for multiple countries
+# Run the script for US and GB separately, then MX and ES separately
 def main():
-    countries = ["US", "GB", "ES", "MX"]
-    for country in countries:
+    us_gb_countries = ["US", "GB"]
+    mx_es_countries = ["MX", "ES"]
+
+    # Process US and GB countries
+    for country in us_gb_countries:
+        fetch_cookies(country)
+
+    # Process MX and ES countries
+    for country in mx_es_countries:
         fetch_cookies(country)
 
 # Execute the script

@@ -30,15 +30,7 @@ export default function RootLayout({
           className={`${inter.className} bg-background text-foreground text-white`}
         >
           <main className="flex flex-col items-center justify-center min-h-screen pt-8">
-            <header className="mb-4">
-              <SignedIn>
-                <UserButton showName />
-              </SignedIn>
-            </header>
-            <SignedOut>
-              <SignIn routing="hash" />
-            </SignedOut>
-            <SignedIn>{children}</SignedIn>
+            {children}
           </main>
           <footer className="border-t border-gray-800 py-4 text-center text-sm text-muted-foreground">
             © 2025 ViralCntrl. All rights reserved.
