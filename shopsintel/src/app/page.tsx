@@ -13,7 +13,7 @@ export default function Home() {
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [selectedCountry, setSelectedCountry] = useState<string>("GB");
+  const [selectedCountry, setSelectedCountry] = useState<string>("US");
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
