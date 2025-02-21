@@ -1,6 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  ClerkProvider,
+  SignIn,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 import VideoGrid from "@/components/VideoGrid";
 import Pagination from "@/components/Pagination";
 import CountrySelector from "@/components/CountrySelector";
@@ -101,35 +108,60 @@ export default function Home() {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8 max-w-7xl">
-      <h1 className="text-3xl font-bold mb-8 text-center text-primary">
-        ⚡️ SHOPSINTEL
-      </h1>
+    <ClerkProvider>
+      <main className="container mx-auto px-4 py-8 max-w-7xl">
+        <header className="flex flex-col items-center justify-center pb-8">
+          <SignedIn>
+            <UserButton showName />
+          </SignedIn>
+        </header>
+        <h1 className="text-3xl font-bold mb-8 text-center text-primary">
+          ⚡️ SHOPSINTEL
+        </h1>
 
-      <div className="flex flex-col items-center gap-4 mb-4">
-        <CountrySelector
-          selectedCountry={selectedCountry}
-          setSelectedCountry={setSelectedCountry}
+        <div className="flex flex-col items-center gap-4 mb-4">
+          <CountrySelector
+            selectedCountry={selectedCountry}
+            setSelectedCountry={setSelectedCountry}
+          />
+          <SortByDropdown value={sortBy} onChange={setSortBy} />
+
+          {/* Search Bar */}
+          <InputWithButton onSearch={handleSearch} />
+        </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={currentPage + 9}
+          onPageChange={setCurrentPage}
         />
-        <SortByDropdown value={sortBy} onChange={setSortBy} />
 
-        {/* Search Bar */}
-        <InputWithButton onSearch={handleSearch} />
-      </div>
+        {loading ? (
+          <SkeletonLoader />
+        ) : (
+          <>
+            <SignedOut>
+              {currentPage >= 2 ? (
+                <div className="flex justify-center items-center">
+                  <SignIn routing="hash" />
+                </div>
+              ) : (
+                <VideoGrid items={videos} />
+              )}
+            </SignedOut>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={currentPage + 9}
-        onPageChange={setCurrentPage}
-      />
+            <SignedIn>
+              <VideoGrid items={videos} />
+            </SignedIn>
+          </>
+        )}
 
-      {loading ? <SkeletonLoader /> : <VideoGrid items={videos} />}
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={currentPage + 9}
-        onPageChange={setCurrentPage}
-      />
-    </main>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={currentPage + 9}
+          onPageChange={setCurrentPage}
+        />
+      </main>
+    </ClerkProvider>
   );
 }
