@@ -47,6 +47,7 @@ def fetch_cookies(country: str):
         "ES": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=ES",
         "MX": "https://partner.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=MX",
     }
+    profile_dir = "Profile 1" if country in ["ES", "MX"] else "Default"
 
     if country not in COUNTRY_URLS:
         print(f"❌ Invalid country: {country}")
@@ -55,9 +56,10 @@ def fetch_cookies(country: str):
     chrome_options = Options()
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--headless")  # Run in headless mode
+    chrome_options.add_argument("--headless")  # Uncomment for headless mode
+    # Dynamically set user-data-dir and profile-directory
     chrome_options.add_argument("--user-data-dir=/Users/muizzkaraole/Library/Application Support/Google/Chrome_Selenium")
-    chrome_options.add_argument("--profile-directory=Default")
+    chrome_options.add_argument(f"--profile-directory={profile_dir}")
 
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
