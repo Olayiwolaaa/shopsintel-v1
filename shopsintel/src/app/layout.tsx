@@ -3,10 +3,8 @@ import { Suspense } from "react";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { PostHogProvider } from "@/app/providers";
 import { FaReddit, FaGlobe } from "react-icons/fa";
 import { SiDiscord } from "react-icons/si";
-import PostHogPageView from "@/app/PostHogPageView";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,11 +24,6 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-background text-foreground text-white`}
       >
-        <PostHogProvider>
-          {/* Wrap PostHogPageView in Suspense */}
-          <Suspense fallback={null}>
-            <PostHogPageView />
-          </Suspense>
 
           <main className="flex flex-col items-center justify-center min-h-screen pt-8">
             {children}
@@ -62,7 +55,6 @@ export default function RootLayout({
             </div>
             <div>Powered by Viralcntrl.</div>
           </footer>
-        </PostHogProvider>
       </body>
     </html>
   );
