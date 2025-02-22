@@ -13,7 +13,8 @@ import Pagination from "@/components/Pagination";
 import CountrySelector from "@/components/CountrySelector";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import SortByDropdown from "@/components/SortByDropdown";
-import { InputWithButton } from "@/components/InputWithButton"; // Import search input
+import { InputWithButton } from "@/components/InputWithButton";
+import { PostHogProvider } from "./providers";
 import { VideoItem } from "@/types";
 
 export default function Home() {
@@ -109,59 +110,61 @@ export default function Home() {
 
   return (
     <ClerkProvider>
-      <main className="container mx-auto px-4 py-8 max-w-7xl">
-        <header className="flex flex-col items-center justify-center pb-8">
-          <SignedIn>
-            <UserButton showName />
-          </SignedIn>
-        </header>
-        <h1 className="text-3xl font-bold mb-8 text-center text-primary">
-          ⚡️ SHOPSINTEL
-        </h1>
-
-        <div className="flex flex-col items-center gap-4 mb-4">
-          <CountrySelector
-            selectedCountry={selectedCountry}
-            setSelectedCountry={setSelectedCountry}
-          />
-          <SortByDropdown value={sortBy} onChange={setSortBy} />
-
-          {/* Search Bar */}
-          <InputWithButton onSearch={handleSearch} />
-        </div>
-
-        <Pagination
-          currentPage={currentPage}
-          totalPages={currentPage + 9}
-          onPageChange={setCurrentPage}
-        />
-
-        {loading ? (
-          <SkeletonLoader />
-        ) : (
-          <>
-            <SignedOut>
-              {currentPage >= 2 ? (
-                <div className="flex justify-center items-center">
-                  <SignIn routing="hash" />
-                </div>
-              ) : (
-                <VideoGrid items={videos} />
-              )}
-            </SignedOut>
-
+      <PostHogProvider>
+        <main className="container mx-auto px-4 py-8 max-w-7xl">
+          <header className="flex flex-col items-center justify-center pb-8">
             <SignedIn>
-              <VideoGrid items={videos} />
+              <UserButton showName />
             </SignedIn>
-          </>
-        )}
+          </header>
+          <h1 className="text-3xl font-bold mb-8 text-center text-primary">
+            ⚡️ SHOPSINTEL
+          </h1>
 
-        <Pagination
-          currentPage={currentPage}
-          totalPages={currentPage + 9}
-          onPageChange={setCurrentPage}
-        />
-      </main>
+          <div className="flex flex-col items-center gap-4 mb-4">
+            <CountrySelector
+              selectedCountry={selectedCountry}
+              setSelectedCountry={setSelectedCountry}
+            />
+            <SortByDropdown value={sortBy} onChange={setSortBy} />
+
+            {/* Search Bar */}
+            <InputWithButton onSearch={handleSearch} />
+          </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={currentPage + 9}
+            onPageChange={setCurrentPage}
+          />
+
+          {loading ? (
+            <SkeletonLoader />
+          ) : (
+            <>
+              <SignedOut>
+                {currentPage >= 2 ? (
+                  <div className="flex justify-center items-center">
+                    <SignIn routing="hash" />
+                  </div>
+                ) : (
+                  <VideoGrid items={videos} />
+                )}
+              </SignedOut>
+
+              <SignedIn>
+                <VideoGrid items={videos} />
+              </SignedIn>
+            </>
+          )}
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={currentPage + 9}
+            onPageChange={setCurrentPage}
+          />
+        </main>
+      </PostHogProvider>
     </ClerkProvider>
   );
 }
