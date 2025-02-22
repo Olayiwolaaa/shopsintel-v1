@@ -9,7 +9,7 @@ import CookieBanner from "@/components/CookieBanner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Shopsintel",
+  title: "Genzsearch",
   description:
     "Find trending products, live creators and your competitors shops",
   icons: {

@@ -42,8 +42,8 @@ def update_cookie_column(country_name, cookie_value):
 def fetch_cookies(country: str):
     """Fetch TikTok Shop cookies for a given country and update PostgreSQL."""
     COUNTRY_URLS = {
-    #     "US": "https://partner.us.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=US",
-    #     "GB": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=GB",
+        "US": "https://partner.us.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=US",
+        "GB": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=GB",
         "MX": "https://partner.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=MX",
         "ES": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=ES",
     }
