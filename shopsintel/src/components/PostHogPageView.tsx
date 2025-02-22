@@ -12,7 +12,7 @@ function PostHogPageView() {
 
   const { isSignedIn, userId } = useAuth();
   const { user } = useUser();
-
+  
   useEffect(() => {
     if (!posthog || !posthog.__loaded) return; // Ensure PostHog is ready
 
@@ -29,19 +29,17 @@ function PostHogPageView() {
   }, [pathname, searchParams, posthog]);
 
   useEffect(() => {
-    const { isSignedIn, user } = useUser(); // Call useUser() outside useEffect
-
-    if (!posthog) return; // Ensure posthog is initialized
-
-    if (isSignedIn && user && !posthog.has_opted_out_capturing()) {
-      posthog.identify(user.id, {
+    if (isSignedIn && userId && user && !posthog._isIdentified()) {
+      posthog.identify(userId, {
         email: user.primaryEmailAddress?.emailAddress,
         username: user.username,
       });
-    } else if (!isSignedIn && posthog.has_opted_out_capturing()) {
-      posthog.reset();
     }
-  }, [isSignedIn, userId, user, posthog]); // Correct dependency array
+    
+    if (!isSignedIn && posthog._isIdentified()) {
+        posthog.reset();
+      }
+  }, [posthog, useUser()])
 
   return null;
 }
