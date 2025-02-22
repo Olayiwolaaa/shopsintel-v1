@@ -68,7 +68,7 @@ export default function Home() {
         return;
       }
 
-      let apiUrl = `https://shopsintel-backend.onrender.com/find_creators?${queryParams.toString()}`;
+      const apiUrl = `https://shopsintel-backend.onrender.com/find_creators?${queryParams.toString()}`;
       console.log("Fetching from API:", apiUrl);
 
       try {
