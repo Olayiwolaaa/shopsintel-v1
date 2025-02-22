@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Genzsearch",
   description:
-    "Find trending products, live creators and your competitors shops",
+    "Tiktok data",
   icons: {
     icon: [
       {
