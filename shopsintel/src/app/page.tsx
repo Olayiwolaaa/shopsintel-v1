@@ -17,6 +17,25 @@ import { InputWithButton } from "@/components/InputWithButton";
 import { PostHogProvider } from "./providers";
 import { VideoItem } from "@/types";
 
+// Function to get cache data from localStorage
+const getCache = (cacheKey: string) => {
+  const cached = localStorage.getItem(cacheKey);
+  if (!cached) return null;
+
+  const { data, timestamp } = JSON.parse(cached);
+  if (Date.now() - timestamp > 5 * 60 * 1000) return null; // Expire after 5 minutes
+
+  return data;
+};
+
+// Function to set cache in localStorage
+const setCache = (cacheKey: string, data: any) => {
+  localStorage.setItem(
+    cacheKey,
+    JSON.stringify({ data, timestamp: Date.now() })
+  );
+};
+
 export default function Home() {
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -28,21 +47,32 @@ export default function Home() {
   useEffect(() => {
     async function fetchVideos() {
       setLoading(true);
+
+      const queryParams = new URLSearchParams({
+        country: selectedCountry,
+        page: currentPage.toString(),
+        filter_by: sortBy,
+      });
+
+      if (searchQuery) {
+        queryParams.append("search_query", searchQuery);
+      }
+
+      const cacheKey = `${selectedCountry}_${currentPage}_${sortBy}_${searchQuery}`;
+      const cachedData = getCache(cacheKey);
+
+      if (cachedData) {
+        console.log("Using cached data for:", cacheKey);
+        setVideos(cachedData);
+        setLoading(false);
+        return;
+      }
+
+      let apiUrl = `https://shopsintel-backend.onrender.com/find_creators?${queryParams.toString()}`;
+      console.log("Fetching from API:", apiUrl);
+
       try {
-        const queryParams = new URLSearchParams({
-          country: selectedCountry,
-          page: currentPage.toString(),
-          filter_by: sortBy,
-        });
-
-        if (searchQuery) {
-          queryParams.append("search_query", searchQuery);
-        }
-
-        const apiUrl = `https://shopsintel-backend.onrender.com/find_creators?${queryParams.toString()}`;
-        console.log(`Fetching: ${apiUrl}`);
-
-        const response = await fetch(apiUrl);
+        const response = await fetch(apiUrl, { cache: "no-store" });
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -85,6 +115,9 @@ export default function Home() {
             .filter(
               (video: VideoItem | null): video is VideoItem => video !== null
             );
+
+          // Save to localStorage cache
+          setCache(cacheKey, parsedVideos);
 
           setVideos(parsedVideos);
         } else {
