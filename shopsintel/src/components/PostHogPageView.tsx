@@ -10,22 +10,23 @@ function PostHogPageView() {
   const posthog = usePostHog();
 
   useEffect(() => {
-    if (pathname && posthog) {
-      let url = window.origin + pathname;
-      if (searchParams.toString()) {
-        url = `${url}?${searchParams.toString()}`;
-      }
+    if (!posthog || !posthog.__loaded) return; // Ensure PostHog is ready
 
-      posthog.capture("$pageview", { $current_url: url });
+    let url = window.origin + pathname;
+    if (searchParams.toString()) {
+      url = `${url}?${searchParams.toString()}`;
     }
+
+    posthog.capture("$pageview", { $current_url: url });
+
+    return () => {
+      posthog.capture("$pageleave", { $current_url: url });
+    };
   }, [pathname, searchParams, posthog]);
 
   return null;
 }
 
-// Wrap this in Suspense to avoid the useSearchParams usage above
-// from de-opting the whole app into client-side rendering
-// See: https://nextjs.org/docs/messages/deopted-into-client-rendering
 export default function SuspendedPostHogPageView() {
   return (
     <Suspense fallback={null}>

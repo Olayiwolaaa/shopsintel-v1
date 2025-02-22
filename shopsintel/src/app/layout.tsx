@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import { FaReddit, FaGlobe } from "react-icons/fa";
 import { SiDiscord } from "react-icons/si";
 import { PostHogProvider } from "./providers";
+import CookieBanner from "@/components/CookieBanner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,7 +29,7 @@ export default function RootLayout({
           <main className="flex flex-col items-center justify-center min-h-screen pt-8">
             {children}
           </main>
-
+          <CookieBanner />
           <footer className="border-t border-gray-800 py-4 text-center text-sm text-muted-foreground">
             <div className="flex justify-center items-center space-x-4 mb-2">
               <a
