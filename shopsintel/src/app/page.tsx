@@ -151,7 +151,7 @@ export default function Home() {
             </SignedIn>
           </header>
           <h1 className="text-3xl font-bold mb-8 text-center text-primary">
-            ⚡️ SHOPSINTEL
+            🚀 SHOPSINTEL
           </h1>
 
           <div className="flex flex-col items-center gap-4 mb-4">
