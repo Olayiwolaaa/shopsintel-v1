@@ -12,6 +12,14 @@ export const metadata: Metadata = {
   title: "Shopsintel",
   description:
     "Find trending products, live creators and your competitors shops",
+  icons: {
+    icon: [
+      {
+        url: "/favicon.icon",
+        href: "/favicon.icon",
+      }
+    ]
+  }
 };
 
 export default function RootLayout({
