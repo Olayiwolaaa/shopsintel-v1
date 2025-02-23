@@ -3,3 +3,4 @@ venv
 prisma/migrations
 **/__pycache__
 .vercel
+.gitignore
