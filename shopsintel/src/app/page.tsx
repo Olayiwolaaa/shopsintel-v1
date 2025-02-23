@@ -69,7 +69,6 @@ export default function Home() {
       }
 
       const apiUrl = `https://shopsintel-backend.onrender.com/find_creators?${queryParams.toString()}`;
-      console.log("Fetching from API:", apiUrl);
 
       try {
         const response = await fetch(apiUrl, { cache: "no-store" });
