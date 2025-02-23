@@ -7,7 +7,6 @@ import {
   SignedIn,
   SignedOut,
   UserButton,
-  useAuth,
 } from "@clerk/nextjs";
 import VideoGrid from "@/components/VideoGrid";
 import Pagination from "@/components/Pagination";
@@ -38,7 +37,6 @@ const setCache = (cacheKey: string, data: any) => {
 };
 
 export default function Home() {
-  const { isSignedIn } = useAuth(); // Check authentication state
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -47,8 +45,6 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {
-    if (!isSignedIn && currentPage >= 2) return; // Prevent API call if unauthenticated
-
     async function fetchVideos() {
       setLoading(true);
 
@@ -136,18 +132,12 @@ export default function Home() {
     }
 
     fetchVideos();
-  }, [currentPage, selectedCountry, sortBy, searchQuery, isSignedIn]);
+  }, [currentPage, selectedCountry, sortBy, searchQuery]);
 
   // Handle search submission
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setCurrentPage(1); // Reset to first page when searching
-  };
-
-  // Prevent users from switching to pages >=2 if not authenticated
-  const handlePageChange = (page: number) => {
-    if (!isSignedIn && page >= 2) return;
-    setCurrentPage(page);
   };
 
   return (
@@ -177,7 +167,7 @@ export default function Home() {
           <Pagination
             currentPage={currentPage}
             totalPages={currentPage + 9}
-            onPageChange={handlePageChange}
+            onPageChange={setCurrentPage}
           />
 
           {loading ? (
@@ -203,7 +193,7 @@ export default function Home() {
           <Pagination
             currentPage={currentPage}
             totalPages={currentPage + 9}
-            onPageChange={handlePageChange}
+            onPageChange={setCurrentPage}
           />
         </main>
       </PostHogProvider>
