@@ -17,16 +17,6 @@ import { InputWithButton } from "@/components/InputWithButton";
 import { PostHogProvider } from "./providers";
 import { VideoItem } from "@/types";
 
-
-const customAppearance = {
-  elements: {
-    userButtonText: {
-      color: 'white',
-    },
-  },
-};
-
-
 // Function to get cache data from localStorage
 const getCache = (cacheKey: string) => {
   const cached = localStorage.getItem(cacheKey);
@@ -156,7 +146,7 @@ export default function Home() {
         <main className="container mx-auto px-4 py-8 max-w-7xl">
           <header className="flex flex-col items-center justify-center pb-8">
             <SignedIn>
-              <UserButton showName appearance={customAppearance} />
+              <UserButton showName />
             </SignedIn>
           </header>
           <h1 className="text-3xl font-bold mb-8 text-center text-primary">
