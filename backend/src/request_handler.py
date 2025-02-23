@@ -37,8 +37,10 @@ async def fetch_cookies(country: str, db):
     COUNTRY_URLS = {
         "US": "https://partner.us.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=US",
         "GB": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=GB",
-        "ES": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=ES",
         "MX": "https://partner.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=MX",
+        "ES": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=ES",
+        "IE": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=manage_account&region=IE",
+        # "BR": "https://partner.tiktokshop.com/v2_sandbox/config?activeTab=manage_account&region=BR",
     }
 
     chrome_options = Options()

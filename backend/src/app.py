@@ -77,7 +77,8 @@ async def find_creators(
     if not country_record:
         raise HTTPException(status_code=400, detail="Invalid country code")
 
-    params = {"user_language": country_record.user_language, "shop_region": country}
+    params = {"user_language": country_record.user_language, "shop_region": 
+              }
 
     headers = {
         "User-Agent": ua.random,

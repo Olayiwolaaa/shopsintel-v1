@@ -37,6 +37,15 @@ const countries: Country[] = [
     ),
   },
   {
+    name: "Ireland",
+    code: "IE",
+    icon: (
+      <span role="img" aria-label="IE">
+        🇮🇪
+      </span>
+    ),
+  },
+  {
     name: "Spain",
     code: "ES",
     icon: (
