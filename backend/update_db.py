@@ -44,7 +44,7 @@ def fetch_cookies(country: str):
     COUNTRY_URLS = {
         # "US": "https://partner.us.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=US",
         # "GB": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=GB",
-        "MX": "https://partner.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=MX",
+        # "MX": "https://partner.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=MX",
         # "ES": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=test_function&region=ES",
         "IE": "https://partner.eu.tiktokshop.com/v2_sandbox/config?activeTab=manage_account&region=IE",
         # "BR": "https://partner.tiktokshop.com/v2_sandbox/config?activeTab=manage_account&region=BR",
@@ -60,15 +60,16 @@ def fetch_cookies(country: str):
     chrome_options.add_argument("--headless")  # Uncomment for headless mode
     chrome_options.add_argument("--user-data-dir=/Users/muizzkaraole/Library/Application Support/Google/Chrome_Selenium")
     
-    # Handle US and GB separately from MX and ES
     if country in ["US", "GB"]:
         chrome_options.add_argument("--profile-directory=Default")
-    else:
+    elif country in ["MX", "ES"]:
         chrome_options.add_argument("--profile-directory=Profile 1")
+    else:
+        chrome_options.add_argument("--profile-directory=Profile 2")
 
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=chrome_options)
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(driver, 10000000000)
 
     try:
         url = COUNTRY_URLS[country]

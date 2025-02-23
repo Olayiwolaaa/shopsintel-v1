@@ -78,6 +78,7 @@ export default function Home() {
         }
 
         const data = await response.json();
+        console.warn("Fetched data:", data);
 
         if (data?.creator_profile_list?.length > 0) {
           const parsedVideos: VideoItem[] = data.creator_profile_list
